@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import './style.css';
 import myData from './data.json';
+import _ from 'lodash';
 export default function App() {
   const [state, setState] = useState(myData);
   const [page, setPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
-  const sortAscending = (a, b) => {
+  const sortObject = (a, b) => {
     return -1;
-  };
-
-  const sortDescending = (a, b) => {
-    return 1;
   };
 
   const getRecords = (page, TotalRecords, sortOrder) => {
@@ -35,15 +32,29 @@ export default function App() {
 
   const sortData = () => {
     let currentsortOrder = !sortOrder;
-
     if (currentsortOrder) {
-      let re = getRecords(page, recordsPerPage).sort(sortAscending);
+      let re = _.sortBy(records, [
+        function (o) {
+          return o.name;
+        },
+      ]);
       setRecords(re);
     } else {
-      let re = getRecords(page, recordsPerPage).sort(sortDescending);
-      setRecords(re);
+      setRecords(getRecords(page, recordsPerPage));
     }
+
     setSortOrder(!sortOrder);
+  };
+
+  const handleChange = (event) => {
+    let name = event.target.value;
+    if (name.length > 0) {
+      const regexp = new RegExp(name, 'i');
+      let newItem = records.filter((x) => regexp.test(x.name));
+      setRecords(newItem);
+    } else {
+      setRecords(getRecords(page, recordsPerPage));
+    }
   };
 
   return (
@@ -51,6 +62,9 @@ export default function App() {
       <button className="btn btn-success" onClick={sortData}>
         Sort
       </button>
+      <div className="col-6 offset-3">
+        <input type="text" class="form-control" onChange={handleChange} />
+      </div>
 
       <br></br>
       <div style={{ marginTop: '40px' }}>

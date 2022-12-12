@@ -25,7 +25,7 @@ export default function App() {
   return (
     <div>
       {records?.map((ele) => (
-        <li>{ele.name}</li>
+        <li>{ele._id} - {ele.name}</li>
       ))}
 
       <nav aria-label="Page navigation example">
